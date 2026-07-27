@@ -448,7 +448,7 @@ class Audstyle_Enc(nn.Module):
       nn.Linear(nf*2,dim_z),
     )
   def forward(self, aud):
-    noise = torch.randn(aud.shape[0], self.dim_noise).cuda()
+    noise = torch.randn(aud.shape[0], self.dim_noise).to(aud.device)
     y = torch.cat((aud, noise), 1)
     enc = self.enc(y)
     return self.mean(enc), self.std(enc)
