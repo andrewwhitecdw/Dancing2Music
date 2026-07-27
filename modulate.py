@@ -156,7 +156,7 @@ def get_pose(pose, n):
     t_pose[n-1] = pose[8]
     for i in range(1, n-1):
       k = int(8/(n-1)*i)
-      t_pose[i] = t_pose[k]
+      t_pose[i] = pose[k]
   else:
     print('NOT IMPLEMENT {}'.format(n))
 
