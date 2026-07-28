@@ -209,18 +209,22 @@ class Trainer_Decomp(object):
     return float(1/(1+np.exp(-0.0005*(i-15000)))) #v3
 
 
-  def generate_stdp_sequence(self, initpose, aud, num_stdp):
+  def generate_stdp_sequence(self, initpose, aud, num_stdp, aud_enc, audstyle_enc):
     self.initp_enc.cuda()
     self.initp_dec.cuda()
     self.movement_enc.cuda()
     self.stdp_dec.cuda()
+    aud_enc.cuda()
+    audstyle_enc.cuda()
     self.initp_enc.eval()
     self.initp_dec.eval()
     self.movement_enc.eval()
     self.stdp_dec.eval()
+    aud_enc.eval()
+    audstyle_enc.eval()
     initpose = initpose.cuda()
 
-    aud_style = self.aud_enc.get_style(aud)
+    aud_style = aud_enc.get_style(aud)
 
     stdp_seq = []
     cnt = 0
@@ -234,7 +238,7 @@ class Trainer_Decomp(object):
         z_init_epss = self.get_z_random(z_init_stds.size(0), z_init_stds.size(1), 'gauss')
         z_inits = z_init_epss.mul(z_init_stds).add_(z_init_mus)
 
-      z_audstyle_mu, z_audstyle_logvar = self.audstyle_enc(aud_style)
+      z_audstyle_mu, z_audstyle_logvar = audstyle_enc(aud_style)
       z_as_std = z_audstyle_logvar.mul(0.5).exp_()
       z_as_eps = self.get_z_random(z_as_std.size(0), z_as_std.size(1), 'gauss')
       z_audstyle = z_as_eps.mul(z_as_std).add_(z_audstyle_mu)
