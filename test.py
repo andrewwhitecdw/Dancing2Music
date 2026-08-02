@@ -8,6 +8,7 @@
 import os
 import argparse
 import functools
+import numpy as np
 
 import torch
 from torch.utils.data import DataLoader
