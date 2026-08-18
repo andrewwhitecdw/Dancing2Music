@@ -70,7 +70,6 @@ class PoseDataset(torch.utils.data.Dataset):
 
   def __getitem__(self, index):
     cls = random.randint(0,2)
-    cls = random.randint(0,1)
     if self.tolerance and random.randint(0,9)==0:
       index = random.randint(0, len(self.t_data[cls])-1)
       path = self.t_data[cls][index][0]
@@ -104,7 +103,7 @@ class PoseDataset(torch.utils.data.Dataset):
     return torch.Tensor(poses), torch.Tensor(poses2)
 
   def __len__(self):
-    return len(self.z_data)+len(self.b_data)
+    return len(self.z_data)+len(self.b_data)+len(self.h_data)
 
 
 class MovementAudDataset(torch.utils.data.Dataset):
@@ -154,7 +153,6 @@ class MovementAudDataset(torch.utils.data.Dataset):
 
   def __getitem__(self, index):
     cls = random.randint(0,2)
-    cls = random.randint(0,1)
     isthree = random.randint(0,1)
 
     if isthree == 0:
