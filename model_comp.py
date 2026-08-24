@@ -136,10 +136,7 @@ class Trainer_Comp(object):
     self.fake_z_movementSeq = torch.cat((fake_z_movementSeq_mu, fake_z_movementSeq_logvar),2)
 
   def backward_D(self):
-    #real_movements = torch.cat((self.z_movementSeq_mu, self.z_movementSeq_logvar),2)
-    tmp_recon_mu = self.recon_z_movements_mu.view(self.batchsize, -1, self.z_movements.shape[1])
-    tmp_recon_logvar = self.recon_z_movements_logvar.view(self.batchsize, -1, self.z_movements.shape[1])
-    real_movements = torch.cat((tmp_recon_mu, tmp_recon_logvar),2)
+    real_movements = torch.cat((self.z_movementSeq_mu, self.z_movementSeq_logvar),2)
     fake_movements = self.fake_z_movementSeq
 
     real_labels,_ = self.danceAud_dis(real_movements.detach(), self.aud)
@@ -288,12 +285,14 @@ class Trainer_Comp(object):
     self.movement_enc.load_state_dict(checkpoint['movement_enc'])
     if train:
       self.danceAud_dis.load_state_dict(checkpoint['danceAud_dis'])
+      self.zdance_dis.load_state_dict(checkpoint['zdance_dis'])
       self.dance_reg.load_state_dict(checkpoint['dance_reg'])
       self.opt_dance_enc.load_state_dict(checkpoint['opt_dance_enc'])
       self.opt_dance_dec.load_state_dict(checkpoint['opt_dance_dec'])
       self.opt_stdp_dec.load_state_dict(checkpoint['opt_stdp_dec'])
       self.opt_audstyle_enc.load_state_dict(checkpoint['opt_audstyle_enc'])
       self.opt_danceAud_dis.load_state_dict(checkpoint['opt_danceAud_dis'])
+      self.opt_zdance_dis.load_state_dict(checkpoint['opt_zdance_dis'])
       self.opt_dance_reg.load_state_dict(checkpoint['opt_dance_reg'])
     return checkpoint['ep'], checkpoint['total_it']
 
@@ -363,14 +362,14 @@ class Trainer_Comp(object):
         self.logs['l_l1_zmovement_logvar'] += self.loss_l1_z_movement_logvar.data
         self.logs['l_l1_stdpSeq'] += self.loss_l1_stdpSeq.data
         self.logs['l_kl_fake_zdance'] += self.loss_kl_fake_z_dance.data
-        self.logs['l_kl_fake_zmovement'] += self.loss_kl_fake_z_movements
+        self.logs['l_kl_fake_zmovement'] += self.loss_kl_fake_z_movements.data
         self.logs['l_dis'] += self.loss_dis.data
         self.logs['l_dis_true'] += self.loss_dis_true.data
         self.logs['l_dis_fake'] += self.loss_dis_fake.data
         self.logs['l_gen'] += self.loss_gen.data
-        self.logs['l_info'] += self.loss_info
-        self.logs['l_info_real'] += self.loss_info_real
-        self.logs['l_info_fake'] += self.loss_info_fake
+        self.logs['l_info'] += self.loss_info.data
+        self.logs['l_info_real'] += self.loss_info_real.data
+        self.logs['l_info_fake'] += self.loss_info_fake.data
 
         print('Epoch:{:3} Iter{}/{}\tl_l1_zmovement mu{:.3f} logvar{:.3f}\tl_l1_stdpSeq {:.3f}\tl_kl_dance {:.3f}\tl_kl_movement {:.3f}\n'.format(epoch, i, len(self.data_loader),
             self.loss_l1_z_movement_mu, self.loss_l1_z_movement_logvar, self.loss_l1_stdpSeq, self.loss_kl_z_dance, self.loss_kl_z_movement) +
